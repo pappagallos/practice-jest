@@ -1,0 +1,12 @@
+// mock function
+
+const fn = require("./fn");
+
+// 실제로 DB에 INSERT 테스트를 한다는 상황에서 Mock 사용법
+jest.mock('./fn');
+fn.createUser.mockReturnValue({ name: 'Mike' });
+
+test('유저를 생성한다.', () => {
+    const { name } = fn.createUser('Mike');
+    expect(name).toBe('Mike');
+});

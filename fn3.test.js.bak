@@ -1,0 +1,54 @@
+const fn = require('./fn');
+
+// beforeAll, 테스트 전체를 실행하기 전, 한 번만 실행
+// afterAll, 테스트 전체를 실행한 후, 한 번만 실행
+let user;
+
+beforeAll(async () => {
+    user = await fn.connectUserDb();
+});
+
+afterAll(async () => {
+    return fn.disconnectUserDb();
+});
+
+test('이름은 Mike 인가?', () => {
+    expect(user.name).toBe('Mike');
+});
+
+test('나이는 28 인가?', () => {
+    expect(user.age).toBe(28);
+});
+
+test('성별은 Male 인가?', () => {
+    expect(user.gender).toBe('Male');
+});
+
+// describe
+describe('Car 테스트 작업', () => {
+    let car;
+
+    beforeAll(async () => {
+        car = await fn.connectCarDb();
+    });
+    
+    afterAll(async () => {
+        return fn.disconnectCarDb();
+    });
+    
+    test('소유자는 Mike 인가?', () => {
+        expect(car.owner).toBe('Mike');
+    });
+    
+    // skip 을 사용하는 순간 모든 테스트 케이스는 실행하되 skip 으로 선언된 테스트 케이스는 실행하지 않는다.
+    // test.skip('색상은 red 인가?', () => {
+    test('색상은 red 인가?', () => {
+        expect(car.color).toBe('red');
+    });
+    
+    // only 를 사용하는 순간 describe 안, 밖의 나머지 테스트 케이스는 skip 되고 only 가 붙은 테스트 케이스만 실행해본다.
+    // test.only('브랜드는 BMW 인가?', () => {
+    test('브랜드는 BMW 인가?', () => {
+        expect(car.brand).toBe('BMW');
+    });
+});

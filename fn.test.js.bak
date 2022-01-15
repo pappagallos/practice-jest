@@ -1,0 +1,127 @@
+const fn = require('./fn');
+
+test('1은 1이다.', () => {
+    expect(1).toBe(1);
+});
+
+test('2 더하기 3은 5다.', () => {
+    expect(fn.add(2, 3)).toBe(5);
+});
+
+test('3 더하기 3은 5가 아니다.', () => {
+    expect(fn.add(3, 3)).not.toBe(5);
+});
+
+// 객체나 배열은 깊은 비교를 해야하기 때문에 toBe 가 아닌 toEqual 혹은 toStrictEqual 를 써주어야 한다.
+test('이름은 Jest, 나이는 28을 객체로 만들다.', () => {
+    expect(fn.makeUser('Mike', 28)).toEqual({
+        name: 'Mike',
+        age: 28
+    });
+})
+
+test('이름은 Jest, 나이는 28을 객체로 만들다.', () => {
+    expect(fn.makeUser('Mike', 28)).toStrictEqual({
+        name: 'Mike',
+        age: 28,
+        gender: undefined
+    });
+})
+
+// toBeNull
+// toBeUndefined
+// toBeDefined
+test('Null은 Null 이다.', () => {
+    expect(null).toBeNull();
+});
+
+// toBeTruthy
+// toBeFalsy
+test('0은 false 이다.', () => {
+    expect(fn.add(1, -1)).toBeFalsy();
+});
+
+test('비어있지 않은 문자열은 true 이다.', () => {
+    expect(fn.add('hello', 'world')).toBeTruthy();
+});
+
+// toBeGreaterThen 크다
+// toBeGreaterThanOrEqual 크거나 같다
+// toBeLessThan 작다
+// toBeLessThanOrEqual 작거나 같다
+test('ID는 10자 이하여야 한다.', () => {
+    const falseCase = 'abcdefghijklmn';
+    const trueCase = 'abc';
+    // expect(falseCase.length).toBeLessThanOrEqual(10);
+    expect(trueCase.length).toBeLessThanOrEqual(10);
+});
+
+test('PW는 4자 여야 한다.', () => {
+    const falseCase = 'abcdefghijklmn';
+    const trueCase = 'abcd';
+    expect(trueCase.length).toBe(4);
+});
+
+// 소수점을 계산할 경우에는 toBe 를 쓰면 0.30000000000000004 값이 나와 테스트 실패 처리 된다.
+// 그럴 땐 toBeCloseTo() 함수를 사용하면 된다.
+test('0.1 더하기 0.2 는 0.3 이다.', () => {
+    expect(fn.add(0.1, 0.2)).toBeCloseTo(0.3);
+});
+
+test('Hello World 에 H 라는 글자가 있나?', () => {
+    expect('Hello World').toMatch(/H/);
+});
+
+// 배열에서 특정 요소가 있는지 확인하기
+test('유저 리스트에 Mike 가 있는가?', () => {
+    const user = 'Jane';
+    const userList = ['Tom', 'Jane', 'Kai', 'Mike'];
+    expect(userList).toContain(user);
+});
+
+// 에러 다루기
+test('에러가 발생하는가?', () => {
+    // Expected substring: "ERROR"
+    // Received message:   "error."
+
+    // expect(() => fn.throwErr()).toThrow('ERROR');
+    expect(() => fn.throwErr()).toThrow('error');
+});
+
+// 비동기 다루기
+// done 을 추가하여 비동기 처리를 진행한다.
+test('3초 후에 받아온 이름은 Mike 인가?', (done) => {
+    function callback(name) {
+        try {
+            expect(name).toBe('Mike');
+            done();
+        } catch (error) {
+            done();
+        }
+    }
+    
+    fn.getName(callback);
+});
+
+// 비동기 다루기2
+// Promise 형태로 반환할 경우 콜백 함수로 done 이 필요하지 않다.
+// getAge 는 Promise 로 반환하는 함수이다.
+// Promise 를 사용할 경우에는 반드시 return 해주어야 한다.
+test('3초 후에 받아온 나이는 28 인가?', () => {
+    // return fn.getAge().then(age => {
+    //     expect(age).toBe(28);
+    // });
+    return expect(fn.getAge()).resolves.toBe(28);
+    // return expect(fn.getAge()).rejects.toMatch('error.');
+});
+
+// 비동기 다루기3
+test('async await 3초 후에 받아온 나이는 28 인가?', async () => {
+    // return fn.getAge().then(age => {
+    //     expect(age).toBe(28);
+    // });
+
+    const age = await fn.getAge();
+    expect(age).toBe(28);
+    // return expect(fn.getAge()).rejects.toMatch('error.');
+});

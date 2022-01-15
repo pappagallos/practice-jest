@@ -1,0 +1,28 @@
+import { render, screen } from '@testing-library/react';
+import Hello from './Hello';
+
+const user = {
+    name: 'Mike',
+    age: 28
+};
+
+const user2 = {
+    age: 28
+};
+
+test('snapshot 테스트, user 객체에 name 이 존재함.', () => {
+    const view = render(<Hello user={user} />);
+    expect(view).toMatchSnapshot();
+});
+
+test('snapshot 테스트, user 객체에 name 이 존재하지 않음.', () => {
+    const view = render(<Hello user={user2} />);
+    expect(view).toMatchSnapshot();
+});
+
+test('Hello 라는 글자가 포함되는가?', () => {
+    render(<Hello user={user} />);
+
+    const helloEl = screen.getByText(/Hello/i);
+    expect(helloEl).toBeInTheDocument();
+});
